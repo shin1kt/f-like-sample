@@ -1,6 +1,16 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
+    "like": {
+      "count": {
+        ".read": "null !== auth.uid",
+        ".write": false
+      },
+      "liked": {
+        "$user_id": {
+          ".write": "$user_id === auth.uid",
+          ".read": false
+        }
+      }
+    }
   }
 }
