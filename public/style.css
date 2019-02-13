@@ -1,0 +1,54 @@
+form {
+    padding: 1em;
+    border: 1px solid #ccc;
+    margin-bottom: 50px;
+}
+form label {
+    display: block;
+    font-weight: bold;
+}
+div {
+    padding: 0.5em;
+}
+.errors {
+    color: #f00;
+}
+.menu {
+    display: flex;
+}
+
+/* ボタンのスタイル */
+.btn {
+    display: inline-block;
+    padding: 0.3em 1em;
+    background: #83f;
+    border: 1px solid #093f5a;
+    border-radius: 0.3em;
+    color: #fff;
+    font-size: 0.8em;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+.btn.disabled {
+    pointer-events: none;
+    opacity: 0.2;
+}
+.btn:hover,
+.btn.liked {
+    background: #093f5a;
+}
+.btn::before {
+    content: "\f0c8";
+    font-family: "Font Awesome 5 Free";
+    display: inline-block;
+    margin-right: 0.3em;
+}
+.btn.liked::before {
+    content: "\f14a";
+}
+.count::before {
+    content: "（";
+}
+.count::after {
+    content: "）";
+}
