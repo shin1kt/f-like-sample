@@ -6,9 +6,11 @@
         ".write": false
       },
       "liked": {
-        "$user_id": {
-          ".write": "$user_id === auth.uid",
-          ".read": false
+        "$button_id": {
+          "$user_id": {
+            ".write": "$user_id === auth.uid",
+            ".read": "$user_id === auth.uid"
+          }
         }
       }
     }
