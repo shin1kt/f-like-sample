@@ -59,6 +59,10 @@
     var el = document.getElementById('login-form');
     var errors = document.getElementById('errors');
 
+    // ボタン
+    var btnList = document.getElementsByClassName( 'btn' );
+
+
     // ログイン処理
     el.addEventListener('submit', function(event){
         var user_id = el.user_id.value;
@@ -83,10 +87,10 @@
         firebase.auth().signOut();
     });
 
+
     // ログイン時の処理
     firebase.auth().onAuthStateChanged( function( user ) {
-        while ( errors.firstChild ) errors.removeChild( errors.firstChild );
-        var btnList = document.getElementsByClassName( 'btn' );
+        while ( errors.firstChild ) errors.removeChild( errors.firstChild ); 
         if ( user ) {
             // ボタンをアクティブにする
             console.log( 'user login ' + user.email );
@@ -97,18 +101,20 @@
                 // いいね数取得
                 let btnId = btn.id;
                 // console.log(btnId);
-                let likeCountRef = firebase.database().ref( '/like/count/' + btnId );
-                likeCountRef.on( 'value', (snapshot) => {
+                let likeCountRef = firebase.database().ref('/like/count/' + btnId );
+                likeCountRef.on('value', (snapshot) => {
                     let countTags = btn.getElementsByClassName('count');
                     let count = snapshot.val();
                     if( count === null ) count = 0;
                     countTags[0].textContent = count;
                 });
                 // いいねしているか判定
-                let likedRef = firebase.database().ref( '/like/liked/' + btnId + '/' + user.uid );
-                likedRef.once('value').then( (snapshot) => {
+                let likedRef = firebase.database().ref('/like/liked/' + btnId + '/' + user.uid );
+                likedRef.on('value', (snapshot) => {
                     if(snapshot.val() === 1){
                         btn.classList.add('liked');
+                    }else{
+                        btn.classList.remove('liked');
                     }
                 });
             }
@@ -135,7 +141,33 @@
     });
 
 
-    // いいね
+    // いいね処理
+    for(var i = 0; i < btnList.length; i++){
+        let btn = btnList[i];
+        
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // 無効状態のときは処理しない
+            if( btn.classList.contains("disabled") ) return false;
+            
+            let value;
+            if( btn.classList.contains('liked') ){
+                value = 0; // いいね済みの場合は解除
+            }else{
+                value = 1; // 「いいね」
+            }
+
+            // 書き込み
+            let user_id = firebase.auth().currentUser.uid;
+            let updates = {};
+            updates['/like/liked/' + btn.id + '/' + user_id] = value;
+            firebase.database().ref().update(updates);
+
+            return false
+        });
+
+    }
 
 </script>
 </body>
