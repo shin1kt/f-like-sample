@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <title>Login</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -27,13 +26,13 @@
 
     <section id="like-content" class="like-content">
         <div id="like1" class="like-box">
-            <a class="btn disabled" href="">いいね<span class="count"></span></a>
+            <a id="btn1" class="btn disabled" href="">いいね<span class="count"></span></a>
         </div>
         <div id="like2" class="like-box">
-            <a class="btn disabled" href="">いいね<span class="count"></span></a>
+            <a id="btn2" class="btn disabled" href="">いいね<span class="count"></span></a>
         </div>
         <div id="like3" class="like-box">
-            <a class="btn disabled" href="">いいね<span class="count"></span></a>
+            <a id="btn3" class="btn disabled" href="">いいね<span class="count"></span></a>
         </div>
     </section>
 
@@ -56,7 +55,7 @@
 
 <script>
 
-    // 送信時の処理
+    // form関連要素
     var el = document.getElementById('login-form');
     var errors = document.getElementById('errors');
 
@@ -92,23 +91,52 @@
             // ボタンをアクティブにする
             console.log( 'user login ' + user.email );
             for(var i = 0; i < btnList.length; i++){
-                btnList[i].classList.remove( 'disabled' );
+                let btn = btnList[i];
+                btn.classList.remove( 'disabled' );
+
+                // いいね数取得
+                let btnId = btn.id;
+                // console.log(btnId);
+                let likeCountRef = firebase.database().ref( '/like/count/' + btnId );
+                likeCountRef.on( 'value', (snapshot) => {
+                    let countTags = btn.getElementsByClassName('count');
+                    let count = snapshot.val();
+                    if( count === null ) count = 0;
+                    countTags[0].textContent = count;
+                });
+                // いいねしているか判定
+                let likedRef = firebase.database().ref( '/like/liked/' + btnId + '/' + user.uid );
+                likedRef.once('value').then( (snapshot) => {
+                    if(snapshot.val() === 1){
+                        btn.classList.add('liked');
+                    }
+                });
             }
 
             // ログイン状態の表示
             document.getElementById('loginStatus').style.display = 'block';
             document.getElementById('loginName').textContent = user.email + 'でログイン中';
 
+            
+
         } else {
             // ボタンを無効にする
             console.log('logout')
             for(var i = 0; i < btnList.length; i++){
-                btnList[i].classList.add( 'disabled' );
+                let btn = btnList[i];
+                btn.classList.add( 'disabled' );
+                btn.classList.remove('liked');
+                let countTags = btn.getElementsByClassName('count');
+                countTags[0].textContent = '';
             }
             // ログイン状態を隠す
             document.getElementById('loginStatus').style.display = 'none';
         }
     });
+
+
+    // いいね
+
 </script>
 </body>
 </html>

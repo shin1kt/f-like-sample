@@ -38,13 +38,13 @@ div {
     background: #093f5a;
 }
 .btn::before {
-    content: "\f0c8";
+    content: "＿";
     font-family: "Font Awesome 5 Free";
     display: inline-block;
     margin-right: 0.3em;
 }
 .btn.liked::before {
-    content: "\f14a";
+    content: "\02665";
 }
 .count::before {
     content: "（";
