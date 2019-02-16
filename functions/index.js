@@ -8,25 +8,32 @@ const functions = require('firebase-functions');
 // });
 
 
+// いいねボタンのクリックをトリガーにして実行
 exports.likeCounter = functions.database.ref('/like/liked/{buttonId}/{userName}')
     .onWrite(( change, context ) => {
+                
+        // 送信されてきた値を取得
+        const input = change.after.val();
+
+        // ボタンIDを取得
         const buttonId = context.params.buttonId;
-        // const userName = context.params.userName;
 
-        var path = '/like/count/' + buttonId;
-        var ref = change.after.ref.root.child(path);
-        var input = change.after.val();
+        // 増減させるデータベースのパス
+        const path = '/like/count/' + buttonId;
+        // 増減させるパスへの参照を作成
+        const ref = change.after.ref.root.child(path);
 
-        // console.log(path);
-        // console.log(buttonId);
-
-        // var val;
+        // 増減させるパスの値（いいねカウント数）を取得
         return ref.once('value').then( snap => {
-            var val = snap.val();
-            if( !val ) val = 0;
+            var val = snap.val(); // 現在のカウント
+            if( !val ) val = 0; // 存在しないときは0
+
+            // inputにはDBに書き込まれた値が入っている
             if( input === 1 ) {
+                // 1が書き込まれた（いいね）ときは増やす
                 return ref.set( val + 1 );
             }else{
+                // 0が書き込まれた（解除）ときは減らす
                 return ref.set( val - 1 );
             }
         });
