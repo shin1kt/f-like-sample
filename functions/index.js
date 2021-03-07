@@ -18,6 +18,12 @@ exports.likeCounter = functions.database.ref('/like/liked/{buttonId}/{userName}'
         // ボタンIDを取得
         const buttonId = context.params.buttonId;
 
+        var db = firebase.database();
+        if (location.hostname === "localhost") {
+            // Point to the RTDB emulator running on localhost.
+            db.useEmulator("localhost", 9000);
+        } 
+
         // 増減させるデータベースのパス
         const path = '/like/count/' + buttonId;
         // 増減させるパスへの参照を作成
